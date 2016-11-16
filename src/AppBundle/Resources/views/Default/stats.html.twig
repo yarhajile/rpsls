@@ -1,0 +1,35 @@
+<div class="panel panel-warning">
+  <div class="panel-heading">
+    <h4>Stats</h4>
+  </div>
+  <div class="panel-body">
+    <table class="table table-striped table-bordered">
+      <tbody>
+        <tr><td>Wins: <strong>{{ stats.Wins }}</strong></td></tr>
+        <tr><td>Losses: <strong>{{ stats.Losses }}</strong></td></tr>
+        <tr><td>Ties: <strong>{{ stats.Ties }}</strong></td></tr>
+        <tr><td>My most played choice: <strong>{{ stats.P1FavoriteChoice }}</strong></td></tr>
+        <tr><td>Their most played choice: <strong>{{ stats.P2FavoriteChoice}}</strong></td></tr>
+        <tr><td>
+          My plays:
+            <div style="margin-left:20px;">
+            <strong>
+            {% for play in stats.P1Plays %}
+              {{ play['choice'] }} - {{ play['result'] }}<br>
+            {% endfor %}</strong>
+          </div>
+        </td></tr>
+        <tr><td>
+          Their plays:
+          <div style="margin-left:20px;">
+            <strong>
+              {% for play in stats.P2Plays %}
+                {{ play['choice'] }} - {{ play['result'] }}<br>
+            {% endfor %}</strong>
+          </div>
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

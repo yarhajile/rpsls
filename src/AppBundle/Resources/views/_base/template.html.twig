@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <title>RPSLS</title>
+    {% stylesheets '@bootstrap_css' %}
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+  </head>
+
+  <body>
+    {% javascripts '@jquery' '@bootstrap_js' %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+     <div style="margin: 20px;">
+       {% block content_body %}{% endblock content_body %}
+     </div>
+  </body>
+</html>
