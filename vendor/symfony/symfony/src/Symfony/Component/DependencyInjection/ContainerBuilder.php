@@ -96,7 +96,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      * If you are not using the loaders and therefore don't want
      * to depend on the Config component, set this flag to false.
      *
-     * @param bool    $track true if you want to track resources, false otherwise
+     * @param bool $track true if you want to track resources, false otherwise
      */
     public function setResourceTracking($track)
     {
@@ -106,7 +106,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     /**
      * Checks if resources are tracked.
      *
-     * @return bool    true if resources are tracked, false otherwise
+     * @return bool true if resources are tracked, false otherwise
      */
     public function isTrackingResources()
     {
@@ -180,7 +180,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      *
      * @param string $name The name of the extension
      *
-     * @return bool    If the extension exists
+     * @return bool If the extension exists
      *
      * @api
      */
@@ -286,9 +286,9 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      * @param array  $values    An array of values that customizes the extension
      *
      * @return ContainerBuilder The current instance
-     * @throws BadMethodCallException When this ContainerBuilder is frozen
      *
-     * @throws \LogicException if the container is frozen
+     * @throws BadMethodCallException When this ContainerBuilder is frozen
+     * @throws \LogicException        if the container is frozen
      *
      * @api
      */
@@ -434,7 +434,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      *
      * @param string $id The service identifier
      *
-     * @return bool    true if the service is defined, false otherwise
+     * @return bool true if the service is defined, false otherwise
      *
      * @api
      */
@@ -448,8 +448,8 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     /**
      * Gets a service.
      *
-     * @param string  $id              The service identifier
-     * @param int     $invalidBehavior The behavior when the service does not exist
+     * @param string $id              The service identifier
+     * @param int    $invalidBehavior The behavior when the service does not exist
      *
      * @return object The associated service
      *
@@ -470,7 +470,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
             return $service;
         }
 
-        if (!$this->hasDefinition($id) && isset($this->aliasDefinitions[$id])) {
+        if (!array_key_exists($id, $this->definitions) && isset($this->aliasDefinitions[$id])) {
             return $this->get($this->aliasDefinitions[$id]);
         }
 
@@ -523,7 +523,6 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      *
      * @param ContainerBuilder $container The ContainerBuilder instance to merge.
      *
-     *
      * @throws BadMethodCallException When this ContainerBuilder is frozen
      *
      * @api
@@ -574,8 +573,8 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     /**
      * Prepends a config array to the configs of the given extension.
      *
-     * @param string $name    The name of the extension
-     * @param array  $config  The config to set
+     * @param string $name   The name of the extension
+     * @param array  $config The config to set
      */
     public function prependExtensionConfig($name, array $config)
     {
@@ -667,8 +666,8 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     /**
      * Sets an alias for an existing service.
      *
-     * @param string        $alias The alias to create
-     * @param string|Alias  $id    The service to alias
+     * @param string       $alias The alias to create
+     * @param string|Alias $id    The service to alias
      *
      * @throws InvalidArgumentException if the id is not a string or an Alias
      * @throws InvalidArgumentException if the alias is for itself
@@ -685,7 +684,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
             throw new InvalidArgumentException('$id must be a string, or an Alias object.');
         }
 
-        if ($alias === strtolower($id)) {
+        if ($alias === (string) $id) {
             throw new InvalidArgumentException(sprintf('An alias can not reference itself, got a circular reference on "%s".', $alias));
         }
 
@@ -711,7 +710,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      *
      * @param string $id The service identifier
      *
-     * @return bool    true if the alias exists, false otherwise
+     * @return bool true if the alias exists, false otherwise
      *
      * @api
      */
@@ -747,7 +746,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     {
         $id = strtolower($id);
 
-        if (!$this->hasAlias($id)) {
+        if (!isset($this->aliasDefinitions[$id])) {
             throw new InvalidArgumentException(sprintf('The service alias "%s" does not exist.', $id));
         }
 
@@ -769,7 +768,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      */
     public function register($id, $class = null)
     {
-        return $this->setDefinition(strtolower($id), new Definition($class));
+        return $this->setDefinition($id, new Definition($class));
     }
 
     /**
@@ -841,7 +840,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      *
      * @param string $id The service identifier
      *
-     * @return bool    true if the service definition exists, false otherwise
+     * @return bool true if the service definition exists, false otherwise
      *
      * @api
      */
@@ -865,7 +864,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     {
         $id = strtolower($id);
 
-        if (!$this->hasDefinition($id)) {
+        if (!array_key_exists($id, $this->definitions)) {
             throw new InvalidArgumentException(sprintf('The service definition "%s" does not exist.', $id));
         }
 
@@ -887,8 +886,10 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      */
     public function findDefinition($id)
     {
-        while ($this->hasAlias($id)) {
-            $id = (string) $this->getAlias($id);
+        $id = strtolower($id);
+
+        while (isset($this->aliasDefinitions[$id])) {
+            $id = (string) $this->aliasDefinitions[$id];
         }
 
         return $this->getDefinition($id);
@@ -903,9 +904,9 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
      *
      * @return object The service described by the service definition
      *
-     * @throws RuntimeException When the scope is inactive
-     * @throws RuntimeException When the factory definition is incomplete
-     * @throws RuntimeException When the service is a synthetic service
+     * @throws RuntimeException         When the scope is inactive
+     * @throws RuntimeException         When the factory definition is incomplete
+     * @throws RuntimeException         When the service is a synthetic service
      * @throws InvalidArgumentException When configure callable is not callable
      *
      * @internal this method is public because of PHP 5.3 limitations, do not use it explicitly in your code
@@ -941,18 +942,14 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
 
         $arguments = $this->resolveServices($parameterBag->unescapeValue($parameterBag->resolveValue($definition->getArguments())));
 
-        if (null !== $definition->getFactory()) {
-            $factory = $definition->getFactory();
-
-            if (is_string($factory)) {
-                $callable = $definition->getFactory();
-            } elseif (is_array($factory)) {
-                $callable = array($this->resolveServices($factory[0]), $factory[1]);
-            } else {
+        if (null !== $factory = $definition->getFactory()) {
+            if (is_array($factory)) {
+                $factory = array($this->resolveServices($parameterBag->resolveValue($factory[0])), $factory[1]);
+            } elseif (!is_string($factory)) {
                 throw new RuntimeException(sprintf('Cannot create service "%s" because of invalid factory', $id));
             }
 
-            $service = call_user_func_array($callable, $arguments);
+            $service = call_user_func_array($factory, $arguments);
         } elseif (null !== $definition->getFactoryMethod()) {
             if (null !== $definition->getFactoryClass()) {
                 $factory = $parameterBag->resolveValue($definition->getFactoryClass());
@@ -1009,9 +1006,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     public function resolveServices($value)
     {
         if (is_array($value)) {
-            foreach ($value as &$v) {
-                $v = $this->resolveServices($v);
-            }
+            $value = array_map(array($this, 'resolveServices'), $value);
         } elseif ($value instanceof Reference) {
             $value = $this->get((string) $value, $value->getInvalidBehavior());
         } elseif ($value instanceof Definition) {
@@ -1073,6 +1068,14 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     public function addExpressionLanguageProvider(ExpressionFunctionProviderInterface $provider)
     {
         $this->expressionLanguageProviders[] = $provider;
+    }
+
+    /**
+     * @return ExpressionFunctionProviderInterface[]
+     */
+    public function getExpressionLanguageProviders()
+    {
+        return $this->expressionLanguageProviders;
     }
 
     /**
@@ -1151,7 +1154,7 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
     }
 
     /**
-     * Shares a given service in the container
+     * Shares a given service in the container.
      *
      * @param Definition $definition
      * @param mixed      $service

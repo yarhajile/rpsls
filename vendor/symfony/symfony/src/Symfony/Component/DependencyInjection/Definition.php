@@ -300,10 +300,10 @@ class Definition
     }
 
     /**
-     * Sets a specific argument
+     * Sets a specific argument.
      *
-     * @param int     $index
-     * @param mixed   $argument
+     * @param int   $index
+     * @param mixed $argument
      *
      * @return Definition The current instance
      *
@@ -337,7 +337,7 @@ class Definition
     /**
      * Gets an argument to pass to the service constructor/factory method.
      *
-     * @param int     $index
+     * @param int $index
      *
      * @return mixed The argument value
      *
@@ -449,7 +449,7 @@ class Definition
     }
 
     /**
-     * Sets tags for this definition
+     * Sets tags for this definition.
      *
      * @param array $tags
      *
@@ -508,7 +508,7 @@ class Definition
     }
 
     /**
-     * Whether this definition has a tag with the given name
+     * Whether this definition has a tag with the given name.
      *
      * @param string $name
      *
@@ -580,7 +580,7 @@ class Definition
     }
 
     /**
-     * Sets the scope of the service
+     * Sets the scope of the service.
      *
      * @param string $scope Whether the service must be shared or not
      *
@@ -596,7 +596,7 @@ class Definition
     }
 
     /**
-     * Returns the scope of the service
+     * Returns the scope of the service.
      *
      * @return string
      *
@@ -610,7 +610,7 @@ class Definition
     /**
      * Sets the visibility of this service.
      *
-     * @param bool    $boolean
+     * @param bool $boolean
      *
      * @return Definition The current instance
      *
@@ -624,7 +624,7 @@ class Definition
     }
 
     /**
-     * Whether this service is public facing
+     * Whether this service is public facing.
      *
      * @return bool
      *
@@ -638,7 +638,7 @@ class Definition
     /**
      * Sets the synchronized flag of this service.
      *
-     * @param bool    $boolean
+     * @param bool $boolean
      *
      * @return Definition The current instance
      *
@@ -666,7 +666,7 @@ class Definition
     /**
      * Sets the lazy flag of this service.
      *
-     * @param bool    $lazy
+     * @param bool $lazy
      *
      * @return Definition The current instance
      */
@@ -691,7 +691,7 @@ class Definition
      * Sets whether this definition is synthetic, that is not constructed by the
      * container, but dynamically injected.
      *
-     * @param bool    $boolean
+     * @param bool $boolean
      *
      * @return Definition the current instance
      *
@@ -721,7 +721,7 @@ class Definition
      * Whether this definition is abstract, that means it merely serves as a
      * template for other definitions.
      *
-     * @param bool    $boolean
+     * @param bool $boolean
      *
      * @return Definition the current instance
      *

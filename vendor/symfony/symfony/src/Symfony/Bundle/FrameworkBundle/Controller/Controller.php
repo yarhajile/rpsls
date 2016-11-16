@@ -24,6 +24,7 @@ use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 
 /**
@@ -38,9 +39,9 @@ class Controller extends ContainerAware
     /**
      * Generates a URL from the given parameters.
      *
-     * @param string         $route         The name of the route
-     * @param mixed          $parameters    An array of parameters
-     * @param bool|string    $referenceType The type of reference (one of the constants in UrlGeneratorInterface)
+     * @param string      $route         The name of the route
+     * @param mixed       $parameters    An array of parameters
+     * @param bool|string $referenceType The type of reference (one of the constants in UrlGeneratorInterface)
      *
      * @return string The generated URL
      *
@@ -71,8 +72,8 @@ class Controller extends ContainerAware
     /**
      * Returns a RedirectResponse to the given URL.
      *
-     * @param string  $url    The URL to redirect to
-     * @param int     $status The status code to use for the Response
+     * @param string $url    The URL to redirect to
+     * @param int    $status The status code to use for the Response
      *
      * @return RedirectResponse
      */
@@ -118,16 +119,17 @@ class Controller extends ContainerAware
      * @param mixed $attributes The attributes
      * @param mixed $object     The object
      *
-     * @throws \LogicException
      * @return bool
+     *
+     * @throws \LogicException
      */
     protected function isGranted($attributes, $object = null)
     {
-        if (!$this->container->has('security.context')) {
+        if (!$this->container->has('security.authorization_checker')) {
             throw new \LogicException('The SecurityBundle is not registered in your application.');
         }
 
-        return $this->container->get('security.context')->isGranted($attributes, $object);
+        return $this->container->get('security.authorization_checker')->isGranted($attributes, $object);
     }
 
     /**
@@ -229,7 +231,7 @@ class Controller extends ContainerAware
      *
      * @return AccessDeniedException
      */
-    public function createAccessDeniedException($message = 'Access Denied', \Exception $previous = null)
+    public function createAccessDeniedException($message = 'Access Denied.', \Exception $previous = null)
     {
         return new AccessDeniedException($message, $previous);
     }
@@ -249,7 +251,7 @@ class Controller extends ContainerAware
     }
 
     /**
-     * Creates and returns a form builder instance
+     * Creates and returns a form builder instance.
      *
      * @param mixed $data    The initial data for the form
      * @param array $options Options for the form
@@ -292,25 +294,26 @@ class Controller extends ContainerAware
     }
 
     /**
-     * Get a user from the Security Context
+     * Get a user from the Security Token Storage.
      *
      * @return mixed
      *
      * @throws \LogicException If SecurityBundle is not available
      *
-     * @see Symfony\Component\Security\Core\Authentication\Token\TokenInterface::getUser()
+     * @see TokenInterface::getUser()
      */
     public function getUser()
     {
-        if (!$this->container->has('security.context')) {
+        if (!$this->container->has('security.token_storage')) {
             throw new \LogicException('The SecurityBundle is not registered in your application.');
         }
 
-        if (null === $token = $this->container->get('security.context')->getToken()) {
+        if (null === $token = $this->container->get('security.token_storage')->getToken()) {
             return;
         }
 
         if (!is_object($user = $token->getUser())) {
+            // e.g. anonymous authentication
             return;
         }
 
@@ -322,7 +325,7 @@ class Controller extends ContainerAware
      *
      * @param string $id The service id
      *
-     * @return bool    true if the service id is defined, false otherwise
+     * @return bool true if the service id is defined, false otherwise
      */
     public function has($id)
     {
@@ -342,7 +345,7 @@ class Controller extends ContainerAware
     }
 
     /**
-     * Checks the validity of a CSRF token
+     * Checks the validity of a CSRF token.
      *
      * @param string $id    The id used when generating the token
      * @param string $token The actual token sent with the request that should be validated

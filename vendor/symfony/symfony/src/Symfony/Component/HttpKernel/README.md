@@ -13,7 +13,7 @@ interface HttpKernelInterface
     /**
      * Handles a Request to convert it to a Response.
      *
-     * @param  Request $request A Request instance
+     * @param Request $request A Request instance
      *
      * @return Response A Response instance
      */
@@ -95,5 +95,5 @@ Resources
 You can run the unit tests with the following command:
 
     $ cd path/to/Symfony/Component/HttpKernel/
-    $ composer.phar install
+    $ composer install
     $ phpunit

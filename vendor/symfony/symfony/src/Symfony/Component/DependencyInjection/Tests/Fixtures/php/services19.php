@@ -9,23 +9,22 @@ use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 /**
- * ProjectServiceContainer
+ * ProjectServiceContainer.
  *
  * This class has been auto-generated
  * by the Symfony Dependency Injection Component.
  */
 class ProjectServiceContainer extends Container
 {
-    private static $parameters = array(
-
-        );
+    private $parameters;
+    private $targetDirs = array();
 
     /**
      * Constructor.
      */
     public function __construct()
     {
-        parent::__construct(new ParameterBag(self::$parameters));
+        parent::__construct();
         $this->methodMap = array(
             'service_from_anonymous_factory' => 'getServiceFromAnonymousFactoryService',
             'service_with_method_call_and_factory' => 'getServiceWithMethodCallAndFactoryService',

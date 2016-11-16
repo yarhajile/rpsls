@@ -1,8 +1,16 @@
-app:
-    resource: "@AppBundle/Controller/"
-    type:     annotation
-    prefix:   /
+#app:
+#    resource: "@AppBundle/Controller/"
+#    type:     annotation
+#    prefix:   /
 
 index:
-  path:       /test
+  path:       /
   defaults:   {_controller: AppBundle:Default:index }
+
+play:
+  path:       /play
+  defaults:   {_controller: AppBundle:Default:play }
+
+stats:
+  path:       /stats
+  defaults:   {_controller: AppBundle:Default:stats }

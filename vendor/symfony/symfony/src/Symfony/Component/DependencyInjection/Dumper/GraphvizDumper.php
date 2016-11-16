@@ -123,10 +123,10 @@ class GraphvizDumper extends Dumper
     /**
      * Finds all edges belonging to a specific service id.
      *
-     * @param string  $id        The service id used to find edges
-     * @param array   $arguments An array of arguments
-     * @param bool    $required
-     * @param string  $name
+     * @param string $id        The service id used to find edges
+     * @param array  $arguments An array of arguments
+     * @param bool   $required
+     * @param string $name
      *
      * @return array An array of edges
      */
@@ -180,7 +180,7 @@ class GraphvizDumper extends Dumper
         foreach ($container->getServiceIds() as $id) {
             $service = $container->get($id);
 
-            if (in_array($id, array_keys($container->getAliases()))) {
+            if (array_key_exists($id, $container->getAliases())) {
                 continue;
             }
 
@@ -236,7 +236,7 @@ class GraphvizDumper extends Dumper
     }
 
     /**
-     * Adds attributes
+     * Adds attributes.
      *
      * @param array $attributes An array of attributes
      *
@@ -253,7 +253,7 @@ class GraphvizDumper extends Dumper
     }
 
     /**
-     * Adds options
+     * Adds options.
      *
      * @param array $options An array of options
      *
@@ -278,7 +278,7 @@ class GraphvizDumper extends Dumper
      */
     private function dotize($id)
     {
-        return strtolower(preg_replace('/[^\w]/i', '_', $id));
+        return strtolower(preg_replace('/\W/i', '_', $id));
     }
 
     /**

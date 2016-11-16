@@ -9,25 +9,22 @@ use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 /**
- * ProjectServiceContainer
+ * ProjectServiceContainer.
  *
  * This class has been auto-generated
  * by the Symfony Dependency Injection Component.
  */
 class ProjectServiceContainer extends Container
 {
-    private static $parameters = array(
-            'baz_class' => 'BazClass',
-            'foo_class' => 'Bar\\FooClass',
-            'foo' => 'bar',
-        );
+    private $parameters;
+    private $targetDirs = array();
 
     /**
      * Constructor.
      */
     public function __construct()
     {
-        parent::__construct(new ParameterBag(self::$parameters));
+        parent::__construct(new ParameterBag($this->getDefaultParameters()));
         $this->methodMap = array(
             'bar' => 'getBarService',
             'baz' => 'getBazService',
@@ -389,5 +386,19 @@ class ProjectServiceContainer extends Container
         $instance->foo = 'bar';
 
         return $instance;
+    }
+
+    /**
+     * Gets the default parameters.
+     *
+     * @return array An array of the default parameters
+     */
+    protected function getDefaultParameters()
+    {
+        return array(
+            'baz_class' => 'BazClass',
+            'foo_class' => 'Bar\\FooClass',
+            'foo' => 'bar',
+        );
     }
 }

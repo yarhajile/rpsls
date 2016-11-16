@@ -155,8 +155,8 @@ class ProfilerController
     /**
      * Renders the Web Debug Toolbar.
      *
-     * @param Request $request  The current HTTP Request
-     * @param string  $token    The profiler token
+     * @param Request $request The current HTTP Request
+     * @param string  $token   The profiler token
      *
      * @return Response A Response instance
      *
@@ -241,16 +241,20 @@ class ProfilerController
             $token = $session->get('_profiler_search_token');
         }
 
-        return new Response($this->twig->render('@WebProfiler/Profiler/search.html.twig', array(
-            'token' => $token,
-            'ip' => $ip,
-            'method' => $method,
-            'url' => $url,
-            'start' => $start,
-            'end' => $end,
-            'limit' => $limit,
-            'request' => $request,
-        )), 200, array('Content-Type' => 'text/html'));
+        return new Response(
+            $this->twig->render('@WebProfiler/Profiler/search.html.twig', array(
+                'token' => $token,
+                'ip' => $ip,
+                'method' => $method,
+                'url' => $url,
+                'start' => $start,
+                'end' => $end,
+                'limit' => $limit,
+                'request' => $request,
+            )),
+            200,
+            array('Content-Type' => 'text/html')
+        );
     }
 
     /**

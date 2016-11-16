@@ -9,35 +9,32 @@ use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\ParameterBag\FrozenParameterBag;
 
 /**
- * ProjectServiceContainer
+ * ProjectServiceContainer.
  *
  * This class has been auto-generated
  * by the Symfony Dependency Injection Component.
  */
 class ProjectServiceContainer extends Container
 {
-    private static $parameters = array(
-            'baz_class' => 'BazClass',
-            'foo_class' => 'Bar\\FooClass',
-            'foo' => 'bar',
-        );
+    private $parameters;
+    private $targetDirs = array();
 
     /**
      * Constructor.
      */
     public function __construct()
     {
+        $this->parameters = $this->getDefaultParameters();
+
         $this->services =
         $this->scopedServices =
         $this->scopeStacks = array();
-
-        $this->set('service_container', $this);
-
         $this->scopes = array();
         $this->scopeChildren = array();
         $this->methodMap = array(
             'bar' => 'getBarService',
             'baz' => 'getBazService',
+            'configurator_service' => 'getConfiguratorServiceService',
             'configured_service' => 'getConfiguredServiceService',
             'decorator_service' => 'getDecoratorServiceService',
             'decorator_service_with_name' => 'getDecoratorServiceWithNameService',
@@ -48,6 +45,7 @@ class ProjectServiceContainer extends Container
             'foo_bar' => 'getFooBarService',
             'foo_with_inline' => 'getFooWithInlineService',
             'method_call1' => 'getMethodCall1Service',
+            'new_factory' => 'getNewFactoryService',
             'new_factory_service' => 'getNewFactoryServiceService',
             'request' => 'getRequestService',
             'service_from_static_method' => 'getServiceFromStaticMethodService',
@@ -113,12 +111,9 @@ class ProjectServiceContainer extends Container
      */
     protected function getConfiguredServiceService()
     {
-        $a = new \ConfClass();
-        $a->setFoo($this->get('baz'));
-
         $this->services['configured_service'] = $instance = new \stdClass();
 
-        $a->configureStdClass($instance);
+        $this->get('configurator_service')->configureStdClass($instance);
 
         return $instance;
     }
@@ -283,10 +278,7 @@ class ProjectServiceContainer extends Container
      */
     protected function getNewFactoryServiceService()
     {
-        $a = new \FactoryClass();
-        $a->foo = 'bar';
-
-        $this->services['new_factory_service'] = $instance = $a->getInstance();
+        $this->services['new_factory_service'] = $instance = $this->get('new_factory')->getInstance();
 
         $instance->foo = 'bar';
 
@@ -330,17 +322,59 @@ class ProjectServiceContainer extends Container
     }
 
     /**
+     * Gets the 'configurator_service' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * This service is private.
+     * If you want to be able to request this service from the container directly,
+     * make it public, otherwise you might end up with broken code.
+     *
+     * @return \ConfClass A ConfClass instance.
+     */
+    protected function getConfiguratorServiceService()
+    {
+        $this->services['configurator_service'] = $instance = new \ConfClass();
+
+        $instance->setFoo($this->get('baz'));
+
+        return $instance;
+    }
+
+    /**
+     * Gets the 'new_factory' service.
+     *
+     * This service is shared.
+     * This method always returns the same instance of the service.
+     *
+     * This service is private.
+     * If you want to be able to request this service from the container directly,
+     * make it public, otherwise you might end up with broken code.
+     *
+     * @return \FactoryClass A FactoryClass instance.
+     */
+    protected function getNewFactoryService()
+    {
+        $this->services['new_factory'] = $instance = new \FactoryClass();
+
+        $instance->foo = 'bar';
+
+        return $instance;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getParameter($name)
     {
         $name = strtolower($name);
 
-        if (!(isset(self::$parameters[$name]) || array_key_exists($name, self::$parameters))) {
+        if (!(isset($this->parameters[$name]) || array_key_exists($name, $this->parameters))) {
             throw new InvalidArgumentException(sprintf('The parameter "%s" must be defined.', $name));
         }
 
-        return self::$parameters[$name];
+        return $this->parameters[$name];
     }
 
     /**
@@ -350,7 +384,7 @@ class ProjectServiceContainer extends Container
     {
         $name = strtolower($name);
 
-        return isset(self::$parameters[$name]) || array_key_exists($name, self::$parameters);
+        return isset($this->parameters[$name]) || array_key_exists($name, $this->parameters);
     }
 
     /**
@@ -367,9 +401,23 @@ class ProjectServiceContainer extends Container
     public function getParameterBag()
     {
         if (null === $this->parameterBag) {
-            $this->parameterBag = new FrozenParameterBag(self::$parameters);
+            $this->parameterBag = new FrozenParameterBag($this->parameters);
         }
 
         return $this->parameterBag;
+    }
+
+    /**
+     * Gets the default parameters.
+     *
+     * @return array An array of the default parameters
+     */
+    protected function getDefaultParameters()
+    {
+        return array(
+            'baz_class' => 'BazClass',
+            'foo_class' => 'Bar\\FooClass',
+            'foo' => 'bar',
+        );
     }
 }
