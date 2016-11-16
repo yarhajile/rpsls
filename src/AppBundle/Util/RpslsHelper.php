@@ -65,7 +65,10 @@ class RpslsHelper {
    * If neither outcomes match, something has gone horribly wrong and an
    * exception is thrown... figure it out engineer!
    *
-   * @todo Instead of returning a tuple, return an object for clarity.
+   * @todo Instead of returning a tuple, return an object for clarity and let
+   *       something downstream determine the textual output, i.e. localization
+   *       or other temlating mechanisms.
+   *
    * @param $p1
    * @param $p2
    * @throws RpslsException
