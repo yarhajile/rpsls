@@ -65,6 +65,7 @@ class RpslsHelper {
    * If neither outcomes match, something has gone horribly wrong and an
    * exception is thrown... figure it out engineer!
    *
+   * @todo Instead of returning a tuple, return an object for clarity.
    * @param $p1
    * @param $p2
    * @throws RpslsException
@@ -76,19 +77,27 @@ class RpslsHelper {
     $outcome_key = $c1 . $c2;
 
     if ($c1 == $c2) {
+      // Better luck next time.
       return array('You tied... try again!', 'tied');
     }
 
     if (array_key_exists($outcome_key, $this->outcomes)) {
       // Player 1 wins;
+
+      // Hooray, the key matches, meaning that the contatenation of p1 choice
+      // selection and p2 choice selection proves that p1 wins.
       return array(sprintf('You win! - %s %s %s', $p1,
           $this->outcomes[$outcome_key], $p2), 'win');
     } elseif (array_key_exists(strrev($outcome_key), $this->outcomes)) {
+      // Since we didn't get a player1 match, reversing the outcome shows that
+      // player2 wins.  Boo...
       // Player 2 wins;
       return array(sprintf('Computer wins - %s %s %s', $p2,
           $this->outcomes[strrev($outcome_key)], $p1), 'loss');
     }
     else {
+      // Ruh roh... this should never happen, but at least now the application
+      // is broken and someone potentially notified on the backend.
       throw new RpslsException(sprintf('Invalid outcome key: %s', $outcome_key));
     }
   }
